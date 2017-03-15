@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import javafx.scene.image.*;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
+import java.util.Arrays;
 import javafx.geometry.Insets;
 import java.util.Random;
 import javafx.event.Event;
@@ -37,10 +38,9 @@ public class BattleShip extends Application {
     private char[][] ocean = new char[16][16];    
     private GridPane controlPane = new GridPane();
     private Button reset = new Button("Reset");
-    private Button showShips = new Button("ShowShips");
-    private Label missLbl = new Label("0");
+    private Button showShips = new Button("Show Ships");
     private int missCount = 0;
-    private Label infoLabel = new Label("Missed Shots: ");
+    private Label infoLabel = new Label();
     
     @Override
     public void start(Stage primaryStage) {
@@ -59,23 +59,31 @@ public class BattleShip extends Application {
         root.setCenter(pnlPlayer);
         root.setTop(controlPane);
         placeShips();
+        
+       
     }
     
-    private void createOptionPane()
+    private void createOptionPane()     // creates the panel to house reset,show boats, and # missed shots 
     {
       controlPane.setStyle("-fx-background-color:BLACK;");
-       controlPane.setVgap(20);
-       controlPane.setHgap(20);
        
+       controlPane.setHgap(30);
+       
+       infoLabel.setText("Missed Shots: " +" "+missCount);
        controlPane.add(infoLabel,0,0);
         infoLabel.setTextFill(LIGHTGREEN);
-       controlPane.add(missLbl,1,0);
-        missLbl.setTextFill(LIGHTGREEN);
-       controlPane.add(reset,2,0);
-       controlPane.add(showShips,3,0);
-       
+        
       
-       controlPane.setFillWidth(reset,true);
+       controlPane.add(reset,1,0);
+            reset.setTextFill(YELLOW);
+            
+            reset.setStyle("-fx-border-width:1;-fx-border-color:YELLOW;-fx-background-color:BLACK;");
+            
+       controlPane.add(showShips,2,0);
+           showShips.setTextFill(YELLOW);
+          
+           showShips.setStyle("-fx-border-width:1;-fx-border-color:YELLOW;-fx-background-color:BLACK;");
+       
       
         
     }
@@ -102,7 +110,10 @@ public class BattleShip extends Application {
     {
         this.loadShipImages();
         this.createShipInfo();
+        
     }
+    
+    
     private void loadShipImages()
     {
         for(int i = 0; i < 10 ; i++)
@@ -110,29 +121,36 @@ public class BattleShip extends Application {
             imgShips[i] = new Image("file:Images\\batt" + (i + 1) + ".gif");
         }
     }
+    
+    
     private void createShipInfo()
     {
         //Start with the frigate, we create 2 of them here but will place 3 total randomly it as two images
 		int[] frigateH = {0,1,4}; // 0,4
-		shipInfo[0] = new frigate("Frigate", frigateH, 'H');
+		shipInfo[0] = new Frigate("Frigate", frigateH, 'H');
 		int[] frigateV = {5,6,9};  // 5,9
-		shipInfo[1] = new frigate("Frigate", frigateV, 'V');
-		
+		shipInfo[1] = new Frigate("Frigate", frigateV, 'V');
+	
         // Create the mine Sweep it has 3 pieces
-		int[] mineSweepH = {0,4};  //0,1,4
-		shipInfo[2] = new mineSweep("Minesweep", mineSweepH, 'H');
+		int[] mineSweepH = {0,4};
+                //0,1,4
+                
+		shipInfo[2] = new MineSweep("Minesweep", mineSweepH, 'H');
 		int[] mineSweepV = {5,9};   // 5,6,9
-		shipInfo[3] = new mineSweep("Minesweep", mineSweepV, 'V');
+		shipInfo[3] = new MineSweep("Minesweep", mineSweepV, 'V');
 		
 		int[] cruiserH = {0,1,2,4};
-		shipInfo[4] = new cruiser("Cruiser", cruiserH, 'H');
+		shipInfo[4] = new Cruiser("Cruiser", cruiserH, 'H');
 		int[] cruiserV = {5,6,7,9};
-		shipInfo[5] = new cruiser("Cruiser", cruiserV, 'V');
+		shipInfo[5] = new Cruiser("Cruiser", cruiserV, 'V');
 		
 		int[] battleShipH = {0,1,2,3,4};
-		shipInfo[6] = new battShip("Battleship", battleShipH, 'H');
+		shipInfo[6] = new BattShip("Battleship", battleShipH, 'H');
 		int[] battleShipV = {5,6,7,8,9};
-		shipInfo[7] = new battShip("Battleship", battleShipV, 'V'); 
+		shipInfo[7] = new BattShip("Battleship", battleShipV, 'V'); 
+               
+                
+                 
     }
     private void initOcean()
     {
@@ -141,6 +159,7 @@ public class BattleShip extends Application {
             for(int col = 0; col < 16; col++)
             {
                     ocean[row][col] = 'O';
+                    
             }
         }
     }
@@ -170,6 +189,7 @@ public class BattleShip extends Application {
                 }
                 // got a clear path, let put the ship on the ocean
                 int shipPieces[] = si.getShipPieces();
+                
                 if(si.Direction == 'H')  // place horizontal
                 {
                         if(direction == 1)
@@ -179,6 +199,7 @@ public class BattleShip extends Application {
                                 lblPlayer[row][i].setGraphic(new ImageView(imgShips[shipPieces[j]]));
                                 String name = si.getName();
                                 ocean[row][i] = name.charAt(0);
+                               
                             }
                         }
                         else
